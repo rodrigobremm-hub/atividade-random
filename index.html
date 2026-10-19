@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Plataforma de Exercícios: Caça aos Erros HTML & CSS</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; font-size: 24px; color: #38bdf8; }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .tab-btn.active {
+      background: #0284c7;
+      color: white;
+      border-color: #0284c7;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .selector-bar {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 15px;
+      background: #1e293b;
+      padding: 12px;
+      border-radius: 6px;
+      flex-wrap: wrap;
+    }
+
+    select, input, textarea {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .editors-container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .editor-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    label { font-weight: bold; margin-bottom: 6px; color: #38bdf8; }
+
+    textarea.code-area {
+      height: 420px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: vertical;
+      background-color: #020617;
+      color: #4ade80;
+    }
+
+    .action-area {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    button.btn-primary {
+      background-color: #10b981;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button.btn-primary:hover { background-color: #059669; }
+
+    .pass-input {
+      width: 220px;
+      border: 1px solid #38bdf8;
+    }
+
+    #painel-verificacao {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #1e293b;
+      border-radius: 6px;
+      display: none;
+    }
+    .status-placar { font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+    .erro-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .corrigido { background-color: #064e3b; color: #6ee7b7; border: 1px solid #10b981; }
+    .pendente { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; }
+
+    .form-group {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label { color: #f8fafc; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎓 Central de Desafios: HTML & CSS (Pro Web)</h1>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('praticar')">🎮 Praticar Exercícios</button>
+    <button class="tab-btn" onclick="switchTab('criar')">➕ Criar Novo Desafio</button>
+  </div>
+
+  <!-- ABA 1: PRATICAR -->
+  <div id="tab-praticar" class="tab-content active">
+    <div class="selector-bar">
+      <label for="select-desafio">Selecione o Desafio Real:</label>
+      <select id="select-desafio" onchange="carregarDesafioSelecionado()"></select>
+      <button onclick="gerarDesafioAleatorio()" style="background: #8b5cf6; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">🎲 Gerar Site Surpresa Realista</button>
+    </div>
+
+    <div class="editors-container">
+      <div class="editor-box">
+        <label for="htmlCode">Código HTML:</label>
+        <textarea id="htmlCode" class="code-area" spellcheck="false"></textarea>
+      </div>
+      <div class="editor-box">
+        <label for="cssCode">Código CSS:</label>
+        <textarea id="cssCode" class="code-area" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div class="action-area">
+      <input type="password" id="senha-prof" class="pass-input" placeholder="🔒 Senha do Professor">
+      <button class="btn-primary" onclick="verificarSolucao()">Verificar 10 Erros</button>
+    </div>
+
+    <div id="painel-verificacao">
+      <div class="status-placar" id="placar"></div>
+      <div id="lista-erros"></div>
+    </div>
+  </div>
+
+  <!-- ABA 2: CRIAR NOVO EXERCÍCIO -->
+  <div id="tab-criar" class="tab-content">
+    <h2>Cadastrar Novo Exercício</h2>
+    <p>Adicione um novo template de site com 10 regras de validação.</p>
+
+    <div class="form-group">
+      <label>Título do Desafio:</label>
+      <input type="text" id="novo-titulo" placeholder="Ex: Landing Page Tech Startup">
+    </div>
+
+    <div class="editors-container">
+      <div class="editor-box">
+        <label>HTML com Erros:</label>
+        <textarea id="novo-html" class="code-area" placeholder="Cole aqui o HTML..."></textarea>
+      </div>
+      <div class="editor-box">
+        <label>CSS com Erros:</label>
+        <textarea id="novo-css" class="code-area" placeholder="Cole aqui o CSS..."></textarea>
+      </div>
+    </div>
+
+    <h3>Regras de Validação:</h3>
+    <div id="regras-container"></div>
+    <button onclick="adicionarCamposRegra()" style="background: #334155; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">+ Adicionar Regra</button>
+
+    <br>
+    <button class="btn-primary" onclick="salvarNovoDesafio()">Salvar Desafio</button>
+  </div>
+
+  <script>
+    const SENHA_CORRETA = "1@senai";
+
+    let desafios = [
+      {
+        id: "iniciante",
+        titulo: "🟢 Iniciante: Landing Page do Smartwatch Ultra",
+        html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Smartwatch NovaTech</title>
+</head>
+<body>
+  <!-- Erro 1 HTML: Imagem sem fechamento de aspas no src -->
+  <header>
+    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600 alt="Smartwatch NovaTech">
+    
+    <!-- Erro 2 HTML: Tag h1 fechada incorretamente -->
+    <h1>Conheça o FitWatch Pro<h1>
+  </header>
+
+  <main>
+    <!-- Erro 3 HTML: Atributo de link escrito como 'link' ao invés de 'href' -->
+    <a link="https://novatech.com/comprar" class="btn-buy">Garantir o Seu</a>
+
+    <!-- Erro 4 HTML: Tag semântica personalizada/inválida <destaque> -->
+    <p>Tecnologia de ponta com monitoramento cardíaco e <destaque>bateria de 7 dias</destaque>.</p>
+
+    <!-- Erro 5 HTML: Inversão e mau aninhamento de fechamento div e p -->
+    <div class="card-specs">
+      <p>Resistente à água até 50m</div></p>
+    </div>
+  </main>
+</body>
+</html>`,
+        css: `/* Erro 6 CSS: Faltou o ponto para indicar classe no seletor */
+btn-buy {
+  background-color: #0284c7;
+  color: #ffffff;
+  padding: 12px 24px;
+}
+
+/* Erro 7 CSS: Falta de ponto e vírgula na propriedade de cor */
+h1 {
+  color: #0f172a
+  font-size: 28px;
+}
+
+/* Erro 8 CSS: Propriedade inválida 'text-color' */
+p {
+  text-color: #475569;
+  line-height: 1.6;
+}
+
+/* Erro 9 CSS: Unidade de medida ausente na largura */
+img {
+  width: 300;
+  border-radius: 12px;
+}
+
+/* Erro 10 CSS: Bloco do seletor sem fechar chave */
+.card-specs {
+  background-color: #f1f5f9;
+  padding: 20px;
+`,
+        regras: [
+          { tipo: "HTML", desc: "Corrigir aspas de fechamento do src da imagem (`src=\"...\"`)", teste: (h, c) => h.includes('src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"') },
+          { tipo: "HTML", desc: "Corrigir fechamento da tag h1 (`</h1>`)", teste: (h, c) => h.includes('<h1>Conheça o FitWatch Pro</h1>') },
+          { tipo: "HTML", desc: "Trocar o atributo `link=` para `href=` na tag `<a>`", teste: (h, c) => h.includes('href=') && !h.includes('link=') },
+          { tipo: "HTML", desc: "Remover ou substituir a tag inválida `<destaque>` por tag válida (ex: `<strong>` ou `<span>`)", teste: (h, c) => !h.includes('<destaque>') },
+          { tipo: "HTML", desc: "Corrigir o aninhamento incorreto de `</p></div>` no card de specs", teste: (h, c) => h.includes('até 50m</p></div>') || h.includes('até 50m</p>\n    </div>') || h.includes('até 50m</p>\n  </div>') },
+          { tipo: "CSS", desc: "Adicionar o ponto `.` no seletor de classe `.btn-buy`", teste: (h, c) => c.includes('.btn-buy') },
+          { tipo: "CSS", desc: "Adicionar ponto e vírgula `;` no `color: #0f172a;` do h1", teste: (h, c) => c.includes('color: #0f172a;') || c.includes('color:#0f172a;') },
+          { tipo: "CSS", desc: "Corrigir a propriedade `text-color` para `color`", teste: (h, c) => !c.includes('text-color') },
+          { tipo: "CSS", desc: "Adicionar unidade `px` ou `%` ao `width: 300` da imagem", teste: (h, c) => /width:\s*300(px|%|em|rem)/.test(c) },
+          { tipo: "CSS", desc: "Fechar a chave `}` da regra `.card-specs`", teste: (h, c) => /\.card-specs\s*\{[^}]*\}/.test(c) }
+        ]
+      },
+      {
+        id: "intermediario",
+        titulo: "🟡 Intermediário: Loja de Moda Urbana (E-commerce)",
+        html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Urban Style - Moda</title>
+</head>
+<body>
+  <header>
+    <h1>Urban Style</h1>
+  </header>
+
+  <main class="vitrine">
+    <!-- Erro 1 HTML: Imagem sem atributo alt de acessibilidade -->
+    <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600" class="prod-img">
+
+    <!-- Erro 2 HTML: Form com tipo de input errado para email no newsletter -->
+    <form action="/checkout">
+      <label for="usr-email">Assine a Newsletter:</label>
+      <input type="text" id="usr-email" name="email">
+
+      <!-- Erro 3 HTML: Botão de form com tipo 'button' em vez de 'submit' -->
+      <input type="button" value="Cadastrar">
+    </form>
+
+    <!-- Erro 4 HTML: Lista de categorias com <li> fora da tag <ul> ou <ol> -->
+    <div class="categorias">
+      <li>Camisetas</li>
+      <li>Jaquetas</li>
+      <li>Tênis</li>
+    </div>
+
+    <!-- Erro 5 HTML: Tag div aberta sem fechamento -->
+    <div class="produto-card">
+      <h3>Jaqueta Streetwear</h3>
+      <p>R$ 299,00</p>
+  </main>
+</body>
+</html>`,
+        css: `/* Erro 6 CSS: Seletor com ID escrito com ponto em vez de cerquilha (#) */
+.usr-email {
+  border: 1px solid #cbd5e1;
+  padding: 8px;
+}
+
+/* Erro 7 CSS: Align-items com valor inválido 'center-items' */
+.vitrine {
+  display: flex;
+  justify-content: center;
+  align-items: center-items;
+}
+
+/* Erro 8 CSS: Pseudoclasse escrita incorretamente 'hovering' */
+.prod-img:hovering {
+  transform: scale(1.05);
+}
+
+/* Erro 9 CSS: Conflito/Sintaxe errada em background (faltou hash # na cor hex) */
+header {
+  background-color: 0f172a;
+  color: #ffffff;
+}
+
+/* Erro 10 CSS: Propriedade margin com sintaxe incorreta (vírgula entre valores) */
+.produto-card {
+  margin: 10px, 20px;
+}`,
+        regras: [
+          { tipo: "HTML", desc: "Adicionar atributo `alt=\"...\"` na tag da imagem da vitrine", teste: (h, c) => /<img[^>]+alt=["'][^"']+["']/.test(h) },
+          { tipo: "HTML", desc: "Mudar o atributo `type=\"text\"` para `type=\"email\"` no input do e-mail", teste: (h, c) => h.includes('type="email"') },
+          { tipo: "HTML", desc: "Mudar o tipo do botão de cadastro para `type=\"submit\"`", teste: (h, c) => h.includes('type="submit"') },
+          { tipo: "HTML", desc: "Envolver os itens `<li>` em uma tag `<ul>` ou `<ol>`", teste: (h, c) => /<ul>[\s\S]*?<li>[\s\S]*?<\/ul>/.test(h) || /<ol>[\s\S]*?<li>[\s\S]*?<\/ol>/.test(h) },
+          { tipo: "HTML", desc: "Fechar a tag `<div class=\"produto-card\">` que ficou aberta", teste: (h, c) => (h.match(/<\/div>/g) || []).length >= 2 },
+          { tipo: "CSS", desc: "Trocar o ponto pelo `#` no seletor do ID `#usr-email`", teste: (h, c) => c.includes('#usr-email') },
+          { tipo: "CSS", desc: "Corrigir `align-items: center-items` para `center` (ou `stretch`/`flex-start`)", teste: (h, c) => !c.includes('align-items: center-items') },
+          { tipo: "CSS", desc: "Corrigir a pseudo-classe para `:hover` (e não `:hovering`)", teste: (h, c) => c.includes('.prod-img:hover') },
+          { tipo: "CSS", desc: "Adicionar a cerquilha `#` no valor hexadecimal `background-color: #0f172a;`", teste: (h, c) => c.includes('#0f172a') },
+          { tipo: "CSS", desc: "Remover a vírgula da propriedade `margin: 10px 20px;`", teste: (h, c) => !c.includes('10px, 20px') }
+        ]
+      },
+      {
+        id: "dificil",
+        titulo: "🔴 Difícil: Dashboard Analytics & Performance",
+        html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Analytics Dashboard</title>
+
+  <!-- Erro 1 HTML: Tag visual h2 inserida incorretamente dentro do head -->
+  <h2>Visão Geral de Vendas</h2>
+</head>
+<body>
+  <!-- Erro 2 HTML: IDs duplicados na mesma página -->
+  <button id="btn-exportar">Exportar PDF</button>
+  <button id="btn-exportar">Exportar CSV</button>
+
+  <!-- Erro 3 HTML: Atributo booleano escrito com valor em texto 'false' -->
+  <input type="checkbox" checked="false"> Atualização Automática
+
+  <!-- Erro 4 HTML: Tabela com estrutura semântica errada (<td> diretamente solto em <table>) -->
+  <table class="data-table">
+    <td>Mês</td><td>Receita</td>
+    <tr>
+      <td>Janeiro</td><td>R$ 45.000</td>
+    </tr>
+  </table>
+
+  <!-- Erro 5 HTML: Acessibilidade ARIA com atributo 'aria-label' vazio -->
+  <div role="button" tabindex="0" aria-label="" class="metric-card">
+    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600" alt="Gráfico">
+    <p>Taxa de Conversão: 4.5%</p>
+  </div>
+</body>
+</html>`,
+        css: `/* Erro 6 CSS: z-index com unidade de medida px */
+.metric-card {
+  position: relative;
+  z-index: 10px;
+}
+
+/* Erro 7 CSS: CSS Grid com sintaxe incorreta no repeat (faltou o tamanho fr) */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3);
+}
+
+/* Erro 8 CSS: Propriedade align-items com valor de justify-content 'space-between' */
+.header-actions {
+  display: flex;
+  align-items: space-between;
+}
+
+/* Erro 9 CSS: Sintaxe do pseudo-elemento ::before sem os dois dois-pontos duplos ou sem content */
+.metric-card::before {
+  background-color: #38bdf8;
+}
+
+/* Erro 10 CSS: Regra media query com sintaxe quebrada (falta fechar parêntese) */
+@media (max-width: 768px {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}`,
+        regras: [
+          { tipo: "HTML", desc: "Mover o elemento `<h2>` de dentro do `<head>` para o `<body>`", teste: (h, c) => !/<head>[\s\S]*?<h2>[\s\S]*?<\/head>/.test(h) },
+          { tipo: "HTML", desc: "Eliminar os IDs duplicados `id=\"btn-exportar\"` (usar IDs únicos ou classes)", teste: (h, c) => (h.match(/id="btn-exportar"/g) || []).length <= 1 },
+          { tipo: "HTML", desc: "Remover `checked=\"false\"` do checkbox (atributos booleanos sem valor)", teste: (h, c) => !h.includes('checked="false"') },
+          { tipo: "HTML", desc: "Corrigir a estrutura da tabela envolvendo as células do cabeçalho em um `<tr>`", teste: (h, c) => !/<table>[\s\S]*?<td>Mês<\/td>/.test(h) && !/<table class="data-table">[\s\S]*?<td>Mês<\/td>/.test(h) },
+          { tipo: "HTML", desc: "Preencher ou remover o atributo de acessibilidade `aria-label=\"\"` que está vazio", teste: (h, c) => !h.includes('aria-label=""') },
+          { tipo: "CSS", desc: "Remover a unidade `px` da propriedade `z-index` (deve ser um inteiro sem unidade)", teste: (h, c) => c.includes('z-index: 10;') || c.includes('z-index:10;') || !c.includes('10px') },
+          { tipo: "CSS", desc: "Corrigir a sintaxe de `repeat()` no CSS Grid (ex: `repeat(3, 1fr)`)", teste: (h, c) => /repeat\(\s*\d+\s*,\s*[^)]+\)/.test(c) },
+          { tipo: "CSS", desc: "Remover o valor inválido `space-between` da propriedade `align-items`", teste: (h, c) => !c.includes('align-items: space-between') && !c.includes('align-items:space-between') },
+          { tipo: "CSS", desc: "Adicionar a propriedade `content: \"\";` obrigatória no pseudo-elemento `::before`", teste: (h, c) => c.includes('content:') },
+          { tipo: "CSS", desc: "Fechar o parêntese na sintaxe do Media Query `(max-width: 768px)`", teste: (h, c) => c.includes('(max-width: 768px)') }
+        ]
+      }
+    ];
+
+    let desafioAtual = null;
+
+    function init() {
+      atualizarSelectDesafios();
+      carregarDesafioSelecionado();
+      for(let i=0; i<3; i++) adicionarCamposRegra();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      if(tab === 'praticar') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-praticar').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-criar').classList.add('active');
+      }
+    }
+
+    function atualizarSelectDesafios() {
+      const select = document.getElementById('select-desafio');
+      select.innerHTML = '';
+      desafios.forEach((d, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = d.titulo;
+        select.appendChild(opt);
+      });
+    }
+
+    function carregarDesafioSelecionado() {
+      const idx = document.getElementById('select-desafio').value || 0;
+      desafioAtual = desafios[idx];
+      document.getElementById('htmlCode').value = desafioAtual.html;
+      document.getElementById('cssCode').value = desafioAtual.css;
+      document.getElementById('painel-verificacao').style.display = 'none';
+      document.getElementById('senha-prof').value = '';
+    }
+
+    function verificarSolucao() {
+      const senhaInformada = document.getElementById('senha-prof').value;
+
+      if (senhaInformada !== SENHA_CORRETA) {
+        alert('🔒 Acesso negado! A verificação exige a senha do professor.');
+        return;
+      }
+
+      const html = document.getElementById('htmlCode').value;
+      const css = document.getElementById('cssCode').value;
+      
+      let acertos = 0;
+      const listaEl = document.getElementById('lista-erros');
+      listaEl.innerHTML = '';
+
+      desafioAtual.regras.forEach(regra => {
+        const pass = regra.teste(html, css);
+        const div = document.createElement('div');
+        div.className = `erro-item ${pass ? 'corrigido' : 'pendente'}`;
+        div.innerHTML = `${pass ? '✅' : '❌'} <strong>[${regra.tipo}]</strong> ${regra.desc}`;
+        listaEl.appendChild(div);
+        if(pass) acertos++;
+      });
+
+      document.getElementById('placar').textContent = `Pontuação: ${acertos} de ${desafioAtual.regras.length} erros corrigidos!`;
+      document.getElementById('painel-verificacao').style.display = 'block';
+    }
+
+    // --- GERADOR DE SITE SURPRESA REALISTA COM 10 ERROS ---
+    function gerarDesafioAleatorio() {
+      const sitesGerais = [
+        {
+          nome: "Cafeteria Gourmet & Roastery",
+          imgHero: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600",
+          imgProd: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600"
+        },
+        {
+          nome: "Academia & Studio Crossfit",
+          imgHero: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600",
+          imgProd: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600"
+        },
+        {
+          nome: "Agência Digital & Design",
+          imgHero: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600",
+          imgProd: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600"
+        }
+      ];
+
+      const site = sitesGerais[Math.floor(Math.random() * sitesGerais.length)];
+
+      const novoHtml = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>${site.nome}</title>
+  <!-- Erro 1 HTML: Tag h3 dentro do head -->
+  <h3>Bem-vindo ao nosso espaço</h3>
+</head>
+<body>
+  <header class="main-header">
+    <!-- Erro 2 HTML: Aspas abertas no src da imagem hero -->
+    <img src="${site.imgHero} alt="Banner">
+    <h1>${site.nome}<h1> <!-- Erro 3 HTML: Fechamento h1 errado -->
+  </header>
+
+  <main>
+    <!-- Erro 4 HTML: Atributo de link 'link=' ao invés de 'href=' -->
+    <a link="https://site.com/reserva" class="btn-reserva">Fazer Reserva</a>
+
+    <!-- Erro 5 HTML: Tag div aberta sem fechamento correspondente -->
+    <div class="card-destaque">
+      <img src="${site.imgProd}" alt="Destaque">
+      <p>A melhor experiência para o seu dia a dia.</p>
+  </main>
+</body>
+</html>`;
+
+      const novoCss = `/* Erro 6 CSS: Seletor de classe sem o ponto inicial */
+btn-reserva {
+  background-color: #10b981;
+  color: #ffffff;
+  padding: 10px 20px;
+}
+
+/* Erro 7 CSS: Falta ponto e vírgula na propriedade color */
+h1 {
+  color: #0f172a
+  font-size: 32px;
+}
+
+/* Erro 8 CSS: Unidade de medida ausente na largura */
+img {
+  width: 100;
+  border-radius: 8px;
+}
+
+/* Erro 9 CSS: Valor inválido center-items no align-items */
+.main-header {
+  display: flex;
+  align-items: center-items;
+}
+
+/* Erro 10 CSS: Bloco sem fechar chave */
+.card-destaque {
+  background-color: #1e293b;
+  padding: 15px;
+`;
+
+      const regras = [
+        { tipo: "HTML", desc: "Mover a tag `<h3>` do `<head>` para o `<body>`", teste: (h, c) => !/<head>[\s\S]*?<h3>[\s\S]*?<\/head>/.test(h) },
+        { tipo: "HTML", desc: "Fechar aspas no src da imagem principal", teste: (h, c) => h.includes(`src="${site.imgHero}"`) },
+        { tipo: "HTML", desc: "Corrigir fechamento da tag `<h1>`", teste: (h, c) => h.includes('</h1>') },
+        { tipo: "HTML", desc: "Corrigir atributo `link=` para `href=`", teste: (h, c) => h.includes('href=') && !h.includes('link=') },
+        { tipo: "HTML", desc: "Fechar a tag `<div class=\"card-destaque\">` aberta", teste: (h, c) => (h.match(/<\/div>/g) || []).length >= 1 },
+        { tipo: "CSS", desc: "Adicionar o ponto `.` na classe `.btn-reserva`", teste: (h, c) => c.includes('.btn-reserva') },
+        { tipo: "CSS", desc: "Adicionar ponto e vírgula `;` no `color: #0f172a;`", teste: (h, c) => c.includes('color: #0f172a;') || c.includes('color:#0f172a;') },
+        { tipo: "CSS", desc: "Adicionar unidade (ex: `px` ou `%`) ao `width: 100`", teste: (h, c) => /width:\s*100(px|%|rem)/.test(c) },
+        { tipo: "CSS", desc: "Corrigir `align-items: center-items` para `center`", teste: (h, c) => !c.includes('align-items: center-items') },
+        { tipo: "CSS", desc: "Fechar a chave `}` no seletor `.card-destaque`", teste: (h, c) => /\.card-destaque\s*\{[^}]*\}/.test(c) }
+      ];
+
+      desafioAtual = { titulo: `🎲 Site Realista: ${site.nome}`, html: novoHtml, css: novoCss, regras: regras };
+      document.getElementById('htmlCode').value = novoHtml;
+      document.getElementById('cssCode').value = novoCss;
+      document.getElementById('painel-verificacao').style.display = 'none';
+      document.getElementById('senha-prof').value = '';
+    }
+
+    // --- CRIAR E SALVAR NOVOS EXERCÍCIOS ---
+    function adicionarCamposRegra() {
+      const container = document.getElementById('regras-container');
+      const div = document.createElement('div');
+      div.className = 'form-group-regra';
+      div.style = "display: flex; gap: 10px; margin-bottom: 10px;";
+      div.innerHTML = `
+        <select class="regra-tipo"><option>HTML</option><option>CSS</option></select>
+        <input type="text" class="regra-desc" placeholder="Descrição do erro a corrigir" style="flex: 1;">
+        <input type="text" class="regra-busca" placeholder="Texto exato que DEVE existir após corrigir" style="flex: 1;">
+      `;
+      container.appendChild(div);
+    }
+
+    function salvarNovoDesafio() {
+      const titulo = document.getElementById('novo-titulo').value || "Desafio Personalizado";
+      const html = document.getElementById('novo-html').value;
+      const css = document.getElementById('novo-css').value;
+
+      const regrasEl = document.querySelectorAll('.form-group-regra');
+      const regras = [];
+
+      regrasEl.forEach(el => {
+        const tipo = el.querySelector('.regra-tipo').value;
+        const desc = el.querySelector('.regra-desc').value;
+        const busca = el.querySelector('.regra-busca').value;
+
+        if(desc && busca) {
+          regras.push({
+            tipo: tipo,
+            desc: desc,
+            teste: (h, c) => tipo === 'HTML' ? h.includes(busca) : c.includes(busca)
+          });
+        }
+      });
+
+      if(regras.length === 0) {
+        alert('Adicione pelo menos 1 regra válida com descrição e texto esperado!');
+        return;
+      }
+
+      desafios.push({ id: Date.now(), titulo: "🔹 " + titulo, html, css, regras });
+      atualizarSelectDesafios();
+      document.getElementById('select-desafio').value = desafios.length - 1;
+      carregarDesafioSelecionado();
+      switchTab('praticar');
+      alert('Novo desafio salvo com sucesso!');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
