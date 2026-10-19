@@ -77,7 +77,7 @@
     label { font-weight: bold; margin-bottom: 6px; color: #38bdf8; }
 
     textarea.code-area {
-      height: 420px;
+      height: 350px;
       font-family: 'Fira Code', 'Courier New', monospace;
       font-size: 13px;
       line-height: 1.5;
@@ -86,10 +86,37 @@
       color: #4ade80;
     }
 
+    .preview-container {
+      margin-top: 20px;
+      margin-bottom: 25px;
+      background-color: #1e293b;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+    }
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+    iframe#live-preview {
+      width: 100%;
+      height: 380px;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 4px;
+    }
+
     .action-area {
       display: flex;
       gap: 15px;
       align-items: center;
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 6px;
     }
 
     button.btn-primary {
@@ -156,12 +183,21 @@
     <div class="editors-container">
       <div class="editor-box">
         <label for="htmlCode">Código HTML:</label>
-        <textarea id="htmlCode" class="code-area" spellcheck="false"></textarea>
+        <textarea id="htmlCode" class="code-area" spellcheck="false" oninput="atualizarPreview()"></textarea>
       </div>
       <div class="editor-box">
         <label for="cssCode">Código CSS:</label>
-        <textarea id="cssCode" class="code-area" spellcheck="false"></textarea>
+        <textarea id="cssCode" class="code-area" spellcheck="false" oninput="atualizarPreview()"></textarea>
       </div>
+    </div>
+
+    <!-- PREVIEW EM TEMPO REAL -->
+    <div class="preview-container">
+      <div class="preview-header">
+        <span>🌐 Visualização Online do Site em Tempo Real</span>
+        <span style="font-size: 12px; color: #94a3b8;">Renderização automática</span>
+      </div>
+      <iframe id="live-preview"></iframe>
     </div>
 
     <div class="action-area">
@@ -210,236 +246,214 @@
     let desafios = [
       {
         id: "iniciante",
-        titulo: "🟢 Iniciante: Landing Page do Smartwatch Ultra",
+        titulo: "🟢 Iniciante: Portal de Notícias de Tecnologia",
         html: `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Smartwatch NovaTech</title>
+  <title>Tech News Online</title>
 </head>
 <body>
-  <!-- Erro 1 HTML: Imagem sem fechamento de aspas no src -->
   <header>
-    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600 alt="Smartwatch NovaTech">
-    
-    <!-- Erro 2 HTML: Tag h1 fechada incorretamente -->
-    <h1>Conheça o FitWatch Pro<h1>
+    <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600" alt="Tech Banner">
+    <h1>Lançamento do Novo Smartphone<h1>
   </header>
 
   <main>
-    <!-- Erro 3 HTML: Atributo de link escrito como 'link' ao invés de 'href' -->
-    <a link="https://novatech.com/comprar" class="btn-buy">Garantir o Seu</a>
+    <a href="https://technews.com/materia">Leia a matéria completa</a>
 
-    <!-- Erro 4 HTML: Tag semântica personalizada/inválida <destaque> -->
-    <p>Tecnologia de ponta com monitoramento cardíaco e <destaque>bateria de 7 dias</destaque>.</p>
+    <p>O novo dispositivo conta com inteligência artificial avançada e <negrito>processador octa-core</negrito>.</p>
 
-    <!-- Erro 5 HTML: Inversão e mau aninhamento de fechamento div e p -->
-    <div class="card-specs">
-      <p>Resistente à água até 50m</div></p>
+    <div class="noticia-card">
+      <p>Confira os testes de desempenho executados em laboratório.</div></p>
     </div>
   </main>
 </body>
 </html>`,
-        css: `/* Erro 6 CSS: Faltou o ponto para indicar classe no seletor */
-btn-buy {
-  background-color: #0284c7;
-  color: #ffffff;
-  padding: 12px 24px;
+        css: `a {
+  text-decoration: underline
+  color: #0284c7;
 }
 
-/* Erro 7 CSS: Falta de ponto e vírgula na propriedade de cor */
+.noticia-card {
+  background-color: #f8fafc;
+  padding: 15px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #e2e8f0
+}
+
+header {
+  align-text: center;
+}
+
 h1 {
-  color: #0f172a
-  font-size: 28px;
+  font-weight: 700;
+  font-size: 24;
 }
 
-/* Erro 8 CSS: Propriedade inválida 'text-color' */
-p {
-  text-color: #475569;
-  line-height: 1.6;
-}
-
-/* Erro 9 CSS: Unidade de medida ausente na largura */
 img {
-  width: 300;
-  border-radius: 12px;
-}
-
-/* Erro 10 CSS: Bloco do seletor sem fechar chave */
-.card-specs {
-  background-color: #f1f5f9;
-  padding: 20px;
+  max-width: 100%;
 `,
         regras: [
-          { tipo: "HTML", desc: "Corrigir aspas de fechamento do src da imagem (`src=\"...\"`)", teste: (h, c) => h.includes('src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"') },
-          { tipo: "HTML", desc: "Corrigir fechamento da tag h1 (`</h1>`)", teste: (h, c) => h.includes('<h1>Conheça o FitWatch Pro</h1>') },
-          { tipo: "HTML", desc: "Trocar o atributo `link=` para `href=` na tag `<a>`", teste: (h, c) => h.includes('href=') && !h.includes('link=') },
-          { tipo: "HTML", desc: "Remover ou substituir a tag inválida `<destaque>` por tag válida (ex: `<strong>` ou `<span>`)", teste: (h, c) => !h.includes('<destaque>') },
-          { tipo: "HTML", desc: "Corrigir o aninhamento incorreto de `</p></div>` no card de specs", teste: (h, c) => h.includes('até 50m</p></div>') || h.includes('até 50m</p>\n    </div>') || h.includes('até 50m</p>\n  </div>') },
-          { tipo: "CSS", desc: "Adicionar o ponto `.` no seletor de classe `.btn-buy`", teste: (h, c) => c.includes('.btn-buy') },
-          { tipo: "CSS", desc: "Adicionar ponto e vírgula `;` no `color: #0f172a;` do h1", teste: (h, c) => c.includes('color: #0f172a;') || c.includes('color:#0f172a;') },
-          { tipo: "CSS", desc: "Corrigir a propriedade `text-color` para `color`", teste: (h, c) => !c.includes('text-color') },
-          { tipo: "CSS", desc: "Adicionar unidade `px` ou `%` ao `width: 300` da imagem", teste: (h, c) => /width:\s*300(px|%|em|rem)/.test(c) },
-          { tipo: "CSS", desc: "Fechar a chave `}` da regra `.card-specs`", teste: (h, c) => /\.card-specs\s*\{[^}]*\}/.test(c) }
+          { tipo: "HTML", desc: "Corrigir o fechamento da tag `<h1>` (`</h1>`)", teste: (h, c) => h.includes('<h1>Lançamento do Novo Smartphone</h1>') },
+          { tipo: "HTML", desc: "Substituir a tag inexistente `<negrito>` por uma tag válida (ex: `<strong>` ou `<b>`)", teste: (h, c) => !h.includes('<negrito>') },
+          { tipo: "HTML", desc: "Corrigir o aninhamento incorreto de `</p></div>` no card da notícia", teste: (h, c) => h.includes('laboratório.</p></div>') || h.includes('laboratório.</p>\n    </div>') },
+          { tipo: "HTML", desc: "Adicionar o atributo booleano de idioma correto na tag `<html>`", teste: (h, c) => h.includes('lang="pt-BR"') },
+          { tipo: "HTML", desc: "Adicionar um id no elemento principal para possibilitar estilização específica (`id=\"principal\"`)", teste: (h, c) => h.includes('id="principal"') || !h.includes('<main>') },
+          { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` após `text-decoration: underline`", teste: (h, c) => c.includes('text-decoration: underline;') || c.includes('text-decoration:underline;') },
+          { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` após `border-color: #e2e8f0`", teste: (h, c) => c.includes('border-color: #e2e8f0;') || c.includes('border-color:#e2e8f0;') },
+          { tipo: "CSS", desc: "Corrigir a propriedade `align-text` para `text-align`", teste: (h, c) => c.includes('text-align:') && !c.includes('align-text:') },
+          { tipo: "CSS", desc: "Adicionar a unidade `px` no valor da propriedade `font-size: 24`", teste: (h, c) => /font-size:\s*24px/.test(c) },
+          { tipo: "CSS", desc: "Fechar a chave `}` do bloco de regras da tag `img`", teste: (h, c) => /img\s*\{[^}]*\}/.test(c) }
         ]
       },
       {
         id: "intermediario",
-        titulo: "🟡 Intermediário: Loja de Moda Urbana (E-commerce)",
+        titulo: "🟡 Intermediário: App de Entregas & Restaurante",
         html: `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Urban Style - Moda</title>
+  <title>Food Express</title>
 </head>
 <body>
   <header>
-    <h1>Urban Style</h1>
+    <h1>Food Express</h1>
   </header>
 
-  <main class="vitrine">
-    <!-- Erro 1 HTML: Imagem sem atributo alt de acessibilidade -->
-    <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600" class="prod-img">
+  <main>
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600" class="prato-img">
 
-    <!-- Erro 2 HTML: Form com tipo de input errado para email no newsletter -->
-    <form action="/checkout">
-      <label for="usr-email">Assine a Newsletter:</label>
-      <input type="text" id="usr-email" name="email">
+    <form action="/pedido">
+      <label for="qtd-itens">Quantidade:</label>
+      <input type="number" id="qtd-itens" min="1" max="10">
 
-      <!-- Erro 3 HTML: Botão de form com tipo 'button' em vez de 'submit' -->
-      <input type="button" value="Cadastrar">
+      <button type="submit" value="Enviar">Fazer Pedido</button>
     </form>
 
-    <!-- Erro 4 HTML: Lista de categorias com <li> fora da tag <ul> ou <ol> -->
-    <div class="categorias">
-      <li>Camisetas</li>
-      <li>Jaquetas</li>
-      <li>Tênis</li>
+    <div class="menu-lista">
+      <option>Hambúrguer Artesanal</option>
+      <option>Batata Frita Especial</option>
+      <option>Refrigerante 500ml</option>
     </div>
 
-    <!-- Erro 5 HTML: Tag div aberta sem fechamento -->
-    <div class="produto-card">
-      <h3>Jaqueta Streetwear</h3>
-      <p>R$ 299,00</p>
+    <section class="restaurante-info">
+      <h3>Tempo estimado de entrega: 30 min</h3>
+      <p>Endereço: Av. Principal, 1000</p>
   </main>
 </body>
 </html>`,
-        css: `/* Erro 6 CSS: Seletor com ID escrito com ponto em vez de cerquilha (#) */
-.usr-email {
-  border: 1px solid #cbd5e1;
-  padding: 8px;
+        css: `#prato-img {
+  width: 100%;
+  border-radius: 8px;
 }
 
-/* Erro 7 CSS: Align-items com valor inválido 'center-items' */
-.vitrine {
+.menu-lista {
   display: flex;
-  justify-content: center;
-  align-items: center-items;
+  direction-flex: row;
 }
 
-/* Erro 8 CSS: Pseudoclasse escrita incorretamente 'hovering' */
-.prod-img:hovering {
-  transform: scale(1.05);
+button:click {
+  background-color: #15803d;
 }
 
-/* Erro 9 CSS: Conflito/Sintaxe errada em background (faltou hash # na cor hex) */
 header {
-  background-color: 0f172a;
-  color: #ffffff;
+  background-color: rgb(15, 23, 42, 0.9);
 }
 
-/* Erro 10 CSS: Propriedade margin com sintaxe incorreta (vírgula entre valores) */
-.produto-card {
-  margin: 10px, 20px;
+.restaurante-info {
+  padding: 10px 15px 10px;
+  font-family: Arial, sans-serif
 }`,
         regras: [
-          { tipo: "HTML", desc: "Adicionar atributo `alt=\"...\"` na tag da imagem da vitrine", teste: (h, c) => /<img[^>]+alt=["'][^"']+["']/.test(h) },
-          { tipo: "HTML", desc: "Mudar o atributo `type=\"text\"` para `type=\"email\"` no input do e-mail", teste: (h, c) => h.includes('type="email"') },
-          { tipo: "HTML", desc: "Mudar o tipo do botão de cadastro para `type=\"submit\"`", teste: (h, c) => h.includes('type="submit"') },
-          { tipo: "HTML", desc: "Envolver os itens `<li>` em uma tag `<ul>` ou `<ol>`", teste: (h, c) => /<ul>[\s\S]*?<li>[\s\S]*?<\/ul>/.test(h) || /<ol>[\s\S]*?<li>[\s\S]*?<\/ol>/.test(h) },
-          { tipo: "HTML", desc: "Fechar a tag `<div class=\"produto-card\">` que ficou aberta", teste: (h, c) => (h.match(/<\/div>/g) || []).length >= 2 },
-          { tipo: "CSS", desc: "Trocar o ponto pelo `#` no seletor do ID `#usr-email`", teste: (h, c) => c.includes('#usr-email') },
-          { tipo: "CSS", desc: "Corrigir `align-items: center-items` para `center` (ou `stretch`/`flex-start`)", teste: (h, c) => !c.includes('align-items: center-items') },
-          { tipo: "CSS", desc: "Corrigir a pseudo-classe para `:hover` (e não `:hovering`)", teste: (h, c) => c.includes('.prod-img:hover') },
-          { tipo: "CSS", desc: "Adicionar a cerquilha `#` no valor hexadecimal `background-color: #0f172a;`", teste: (h, c) => c.includes('#0f172a') },
-          { tipo: "CSS", desc: "Remover a vírgula da propriedade `margin: 10px 20px;`", teste: (h, c) => !c.includes('10px, 20px') }
+          { tipo: "HTML", desc: "Substituir as tags `<option>` fora de um `<select>` por tags de lista (`<ul>`/`<li>`) ou parágrafos", teste: (h, c) => !h.includes('<option>') },
+          { tipo: "HTML", desc: "Fechar a tag `<section class=\"restaurante-info\">` que ficou aberta", teste: (h, c) => h.includes('</section>') },
+          { tipo: "HTML", desc: "Remover o atributo `value=\"Enviar\"` desnecessário em `<button type=\"submit\">`", teste: (h, c) => !h.includes('value="Enviar"') },
+          { tipo: "HTML", desc: "Corrigir a estrutura adicionando o atributo `name=\"quantidade\"` ao input de número", teste: (h, c) => h.includes('name=') },
+          { tipo: "HTML", desc: "Envolver o rodapé com a tag semântica `<footer>` ao invés de fechar diretamente no `<main>`", teste: (h, c) => h.includes('<footer>') },
+          { tipo: "CSS", desc: "Trocar o seletor de ID `#prato-img` pelo seletor de classe `.prato-img`", teste: (h, c) => c.includes('.prato-img') && !c.includes('#prato-img') },
+          { tipo: "CSS", desc: "Corrigir a propriedade `direction-flex` para `flex-direction`", teste: (h, c) => c.includes('flex-direction:') && !c.includes('direction-flex:') },
+          { tipo: "CSS", desc: "Corrigir o nome da pseudo-classe de estado de clique de `:click` para `:active`", teste: (h, c) => c.includes('button:active') },
+          { tipo: "CSS", desc: "Corrigir a sintaxe da função `rgb()` ajustando para `rgba()` para aceitar o canal alfa", teste: (h, c) => c.includes('rgba(') },
+          { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` no final da declaração `font-family`", teste: (h, c) => c.includes('sans-serif;') }
         ]
       },
       {
         id: "dificil",
-        titulo: "🔴 Difícil: Dashboard Analytics & Performance",
+        titulo: "🔴 Difícil: Plataforma SaaS & Gestão Financeira",
         html: `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Analytics Dashboard</title>
+  <title>FinDash SaaS</title>
 
-  <!-- Erro 1 HTML: Tag visual h2 inserida incorretamente dentro do head -->
-  <h2>Visão Geral de Vendas</h2>
+  <style>
+    body { margin: 0; }
+  </style>
 </head>
 <body>
-  <!-- Erro 2 HTML: IDs duplicados na mesma página -->
-  <button id="btn-exportar">Exportar PDF</button>
-  <button id="btn-exportar">Exportar CSV</button>
+  <header>
+    <h1>FinDash</h1>
+    <nav>
+      <a href="/dash" class="nav-link active" class="primary">Início</a>
+    </nav>
+  </header>
 
-  <!-- Erro 3 HTML: Atributo booleano escrito com valor em texto 'false' -->
-  <input type="checkbox" checked="false"> Atualização Automática
+  <main>
+    <section>
+      <h2>Resumo da Conta</h2>
+      <button onclick="carregarDados()">Atualizar</button>
+    </section>
 
-  <!-- Erro 4 HTML: Tabela com estrutura semântica errada (<td> diretamente solto em <table>) -->
-  <table class="data-table">
-    <td>Mês</td><td>Receita</td>
-    <tr>
-      <td>Janeiro</td><td>R$ 45.000</td>
-    </tr>
-  </table>
+    <div class="kpi-card" tabindex="-1">
+      <p>Saldo Atual: R$ 12.500,00</p>
+    </div>
 
-  <!-- Erro 5 HTML: Acessibilidade ARIA com atributo 'aria-label' vazio -->
-  <div role="button" tabindex="0" aria-label="" class="metric-card">
-    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600" alt="Gráfico">
-    <p>Taxa de Conversão: 4.5%</p>
-  </div>
+    <form class="filter-form">
+      <input type="text" placeholder="Buscar transação" disabled="true">
+    </form>
+  </main>
 </body>
 </html>`,
-        css: `/* Erro 6 CSS: z-index com unidade de medida px */
-.metric-card {
-  position: relative;
-  z-index: 10px;
+        css: `.kpi-card {
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  box-shadow: 0px 4px 10px #00000033;
+  width: calc(100% - 20px);
 }
 
-/* Erro 7 CSS: CSS Grid com sintaxe incorreta no repeat (faltou o tamanho fr) */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3);
+.filter-form input:disabled {
+  background-color: #f1f5f9
+  cursor: not-allowed;
 }
 
-/* Erro 8 CSS: Propriedade align-items com valor de justify-content 'space-between' */
-.header-actions {
-  display: flex;
-  align-items: space-between;
+.nav-link.active {
+  color: #0284c7;
+  border-bottom: 2px solid #0284c7
 }
 
-/* Erro 9 CSS: Sintaxe do pseudo-elemento ::before sem os dois dois-pontos duplos ou sem content */
-.metric-card::before {
-  background-color: #38bdf8;
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Erro 10 CSS: Regra media query com sintaxe quebrada (falta fechar parêntese) */
-@media (max-width: 768px {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+.kpi-card {
+  animation-name: fade;
+  animation-duration: 2;
 }`,
         regras: [
-          { tipo: "HTML", desc: "Mover o elemento `<h2>` de dentro do `<head>` para o `<body>`", teste: (h, c) => !/<head>[\s\S]*?<h2>[\s\S]*?<\/head>/.test(h) },
-          { tipo: "HTML", desc: "Eliminar os IDs duplicados `id=\"btn-exportar\"` (usar IDs únicos ou classes)", teste: (h, c) => (h.match(/id="btn-exportar"/g) || []).length <= 1 },
-          { tipo: "HTML", desc: "Remover `checked=\"false\"` do checkbox (atributos booleanos sem valor)", teste: (h, c) => !h.includes('checked="false"') },
-          { tipo: "HTML", desc: "Corrigir a estrutura da tabela envolvendo as células do cabeçalho em um `<tr>`", teste: (h, c) => !/<table>[\s\S]*?<td>Mês<\/td>/.test(h) && !/<table class="data-table">[\s\S]*?<td>Mês<\/td>/.test(h) },
-          { tipo: "HTML", desc: "Preencher ou remover o atributo de acessibilidade `aria-label=\"\"` que está vazio", teste: (h, c) => !h.includes('aria-label=""') },
-          { tipo: "CSS", desc: "Remover a unidade `px` da propriedade `z-index` (deve ser um inteiro sem unidade)", teste: (h, c) => c.includes('z-index: 10;') || c.includes('z-index:10;') || !c.includes('10px') },
-          { tipo: "CSS", desc: "Corrigir a sintaxe de `repeat()` no CSS Grid (ex: `repeat(3, 1fr)`)", teste: (h, c) => /repeat\(\s*\d+\s*,\s*[^)]+\)/.test(c) },
-          { tipo: "CSS", desc: "Remover o valor inválido `space-between` da propriedade `align-items`", teste: (h, c) => !c.includes('align-items: space-between') && !c.includes('align-items:space-between') },
-          { tipo: "CSS", desc: "Adicionar a propriedade `content: \"\";` obrigatória no pseudo-elemento `::before`", teste: (h, c) => c.includes('content:') },
-          { tipo: "CSS", desc: "Fechar o parêntese na sintaxe do Media Query `(max-width: 768px)`", teste: (h, c) => c.includes('(max-width: 768px)') }
+          { tipo: "HTML", desc: "Corrigir atributos `class` duplicados na mesma tag `<a>` mesclando em `class=\"nav-link active primary\"`", teste: (h, c) => (h.match(/class=/g) || []).length <= 4 && !h.includes('class="nav-link active" class="primary"') },
+          { tipo: "HTML", desc: "Remover a função inline `onclick=\"carregarDados()\"` substituindo por um ID para controle via JS", teste: (h, c) => !h.includes('onclick=') },
+          { tipo: "HTML", desc: "Ajustar o atributo `tabindex=\"-1\"` para `tabindex=\"0\"` tornando o card focável por acessibilidade", teste: (h, c) => !h.includes('tabindex="-1"') },
+          { tipo: "HTML", desc: "Corrigir o atributo booleano `disabled=\"true\"` para apenas `disabled`", teste: (h, c) => !h.includes('disabled="true"') },
+          { tipo: "HTML", desc: "Adicionar o elemento `<label>` associado ao campo de busca do formulário", teste: (h, c) => h.includes('<label') },
+          { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` no final da declaração `background-color: #f1f5f9`", teste: (h, c) => c.includes('background-color: #f1f5f9;') || c.includes('background-color:#f1f5f9;') },
+          { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` no final da declaração `border-bottom`", teste: (h, c) => c.includes('border-bottom: 2px solid #0284c7;') || c.includes('border-bottom:2px solid #0284c7;') },
+          { tipo: "CSS", desc: "Adicionar a unidade de tempo `s` em `animation-duration: 2s`", teste: (h, c) => /animation-duration:\s*2s/.test(c) },
+          { tipo: "CSS", desc: "Corrigir o valor de transparência no código de cor hexadecimal do `box-shadow`", teste: (h, c) => !c.includes('#00000033') || c.includes('rgba(') },
+          { tipo: "CSS", desc: "Unificar os seletores duplicados `.kpi-card` em um único bloco de estilo", teste: (h, c) => (c.match(/\.kpi-card\s*\{/g) || []).length <= 1 }
         ]
       }
     ];
@@ -483,6 +497,29 @@ header {
       document.getElementById('cssCode').value = desafioAtual.css;
       document.getElementById('painel-verificacao').style.display = 'none';
       document.getElementById('senha-prof').value = '';
+      
+      atualizarPreview();
+    }
+
+    function atualizarPreview() {
+      const html = document.getElementById('htmlCode').value;
+      const css = document.getElementById('cssCode').value;
+      const iframe = document.getElementById('live-preview');
+      
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>${css}</style>
+        </head>
+        <body>
+          ${html}
+        </body>
+        </html>
+      `);
+      doc.close();
     }
 
     function verificarSolucao() {
@@ -513,23 +550,22 @@ header {
       document.getElementById('painel-verificacao').style.display = 'block';
     }
 
-    // --- GERADOR DE SITE SURPRESA REALISTA COM 10 ERROS ---
     function gerarDesafioAleatorio() {
       const sitesGerais = [
         {
-          nome: "Cafeteria Gourmet & Roastery",
-          imgHero: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600",
-          imgProd: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600"
+          nome: "Livraria & Editora Cultura",
+          imgHero: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600",
+          imgProd: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600"
         },
         {
-          nome: "Academia & Studio Crossfit",
-          imgHero: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600",
-          imgProd: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600"
+          nome: "Clínica Veterinária PetCare",
+          imgHero: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=600",
+          imgProd: "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600"
         },
         {
-          nome: "Agência Digital & Design",
-          imgHero: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600",
-          imgProd: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600"
+          nome: "Escola de Música Harmony",
+          imgHero: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600",
+          imgProd: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=600"
         }
       ];
 
@@ -540,70 +576,59 @@ header {
 <head>
   <meta charset="UTF-8">
   <title>${site.nome}</title>
-  <!-- Erro 1 HTML: Tag h3 dentro do head -->
-  <h3>Bem-vindo ao nosso espaço</h3>
 </head>
 <body>
-  <header class="main-header">
-    <!-- Erro 2 HTML: Aspas abertas no src da imagem hero -->
-    <img src="${site.imgHero} alt="Banner">
-    <h1>${site.nome}<h1> <!-- Erro 3 HTML: Fechamento h1 errado -->
+  <header>
+    <img src="${site.imgHero}" alt="Capa">
+    <h1>${site.nome}<h1>
   </header>
 
   <main>
-    <!-- Erro 4 HTML: Atributo de link 'link=' ao invés de 'href=' -->
-    <a link="https://site.com/reserva" class="btn-reserva">Fazer Reserva</a>
+    <a href="https://site.com/contato">Entre em contato conosco</a>
 
-    <!-- Erro 5 HTML: Tag div aberta sem fechamento correspondente -->
-    <div class="card-destaque">
-      <img src="${site.imgProd}" alt="Destaque">
-      <p>A melhor experiência para o seu dia a dia.</p>
+    <p>Oferecemos o melhor atendimento e <destaque>serviços personalizados</destaque>.</p>
+
+    <div class="card-info">
+      <p>Venha conhecer nossas instalações de perto.</div></p>
+    </div>
   </main>
 </body>
 </html>`;
 
-      const novoCss = `/* Erro 6 CSS: Seletor de classe sem o ponto inicial */
-btn-reserva {
-  background-color: #10b981;
-  color: #ffffff;
-  padding: 10px 20px;
+      const novoCss = `a {
+  color: #0284c7
+  text-decoration: none;
 }
 
-/* Erro 7 CSS: Falta ponto e vírgula na propriedade color */
+.card-info {
+  background-color: #f1f5f9;
+  padding: 20px;
+  border-color: #cbd5e1
+}
+
+header {
+  align-text: center;
+}
+
 h1 {
-  color: #0f172a
-  font-size: 32px;
+  font-size: 28;
 }
 
-/* Erro 8 CSS: Unidade de medida ausente na largura */
 img {
-  width: 100;
-  border-radius: 8px;
-}
-
-/* Erro 9 CSS: Valor inválido center-items no align-items */
-.main-header {
-  display: flex;
-  align-items: center-items;
-}
-
-/* Erro 10 CSS: Bloco sem fechar chave */
-.card-destaque {
-  background-color: #1e293b;
-  padding: 15px;
+  width: 100%;
 `;
 
       const regras = [
-        { tipo: "HTML", desc: "Mover a tag `<h3>` do `<head>` para o `<body>`", teste: (h, c) => !/<head>[\s\S]*?<h3>[\s\S]*?<\/head>/.test(h) },
-        { tipo: "HTML", desc: "Fechar aspas no src da imagem principal", teste: (h, c) => h.includes(`src="${site.imgHero}"`) },
-        { tipo: "HTML", desc: "Corrigir fechamento da tag `<h1>`", teste: (h, c) => h.includes('</h1>') },
-        { tipo: "HTML", desc: "Corrigir atributo `link=` para `href=`", teste: (h, c) => h.includes('href=') && !h.includes('link=') },
-        { tipo: "HTML", desc: "Fechar a tag `<div class=\"card-destaque\">` aberta", teste: (h, c) => (h.match(/<\/div>/g) || []).length >= 1 },
-        { tipo: "CSS", desc: "Adicionar o ponto `.` na classe `.btn-reserva`", teste: (h, c) => c.includes('.btn-reserva') },
-        { tipo: "CSS", desc: "Adicionar ponto e vírgula `;` no `color: #0f172a;`", teste: (h, c) => c.includes('color: #0f172a;') || c.includes('color:#0f172a;') },
-        { tipo: "CSS", desc: "Adicionar unidade (ex: `px` ou `%`) ao `width: 100`", teste: (h, c) => /width:\s*100(px|%|rem)/.test(c) },
-        { tipo: "CSS", desc: "Corrigir `align-items: center-items` para `center`", teste: (h, c) => !c.includes('align-items: center-items') },
-        { tipo: "CSS", desc: "Fechar a chave `}` no seletor `.card-destaque`", teste: (h, c) => /\.card-destaque\s*\{[^}]*\}/.test(c) }
+        { tipo: "HTML", desc: "Corrigir fechamento da tag `<h1>` (`</h1>`)", teste: (h, c) => h.includes('<h1>' + site.nome + '</h1>') },
+        { tipo: "HTML", desc: "Substituir a tag inválida `<destaque>` por uma tag semântica válida", teste: (h, c) => !h.includes('<destaque>') },
+        { tipo: "HTML", desc: "Corrigir a inversão de fechamento `</p></div>` no card de informações", teste: (h, c) => h.includes('perto.</p></div>') || h.includes('perto.</p>\n    </div>') },
+        { tipo: "HTML", desc: "Adicionar id ao container principal `<main id=\"conteudo\">`", teste: (h, c) => h.includes('id="conteudo"') || !h.includes('<main>') },
+        { tipo: "HTML", desc: "Adicionar o atributo booleano de idioma correto na tag `<html>`", teste: (h, c) => h.includes('lang="pt-BR"') },
+        { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` na cor da tag `a`", teste: (h, c) => c.includes('color: #0284c7;') || c.includes('color:#0284c7;') },
+        { tipo: "CSS", desc: "Adicionar o ponto e vírgula `;` na propriedade `border-color`", teste: (h, c) => c.includes('border-color: #cbd5e1;') || c.includes('border-color:#cbd5e1;') },
+        { tipo: "CSS", desc: "Corrigir a propriedade `align-text` para `text-align`", teste: (h, c) => c.includes('text-align:') && !c.includes('align-text:') },
+        { tipo: "CSS", desc: "Adicionar a unidade `px` na propriedade `font-size: 28`", teste: (h, c) => /font-size:\s*28px/.test(c) },
+        { tipo: "CSS", desc: "Fechar a chave `}` da regra da imagem", teste: (h, c) => /img\s*\{[^}]*\}/.test(c) }
       ];
 
       desafioAtual = { titulo: `🎲 Site Realista: ${site.nome}`, html: novoHtml, css: novoCss, regras: regras };
@@ -611,9 +636,10 @@ img {
       document.getElementById('cssCode').value = novoCss;
       document.getElementById('painel-verificacao').style.display = 'none';
       document.getElementById('senha-prof').value = '';
+      
+      atualizarPreview();
     }
 
-    // --- CRIAR E SALVAR NOVOS EXERCÍCIOS ---
     function adicionarCamposRegra() {
       const container = document.getElementById('regras-container');
       const div = document.createElement('div');
